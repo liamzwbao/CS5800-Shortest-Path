@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from math import radians, sin, cos, sqrt, asin
 
+import pandas as pd
+
 
 class Vertex:
 
     def __init__(self, val: str, lat: float, lon: float) -> None:
-        self.val = val
-        self.lat = lat
-        self.lon = lon
+        self.val: str = val
+        self.lat: float = lat
+        self.lon: float = lon
 
     def __hash__(self) -> int:
         return hash(self.val)
@@ -32,15 +34,15 @@ class Vertex:
 class Edge:
 
     def __init__(self, src: Vertex, dst: Vertex, weight: float = 1) -> None:
-        self.src = src
-        self.dst = dst
-        self.weight = weight
+        self.src: Vertex = src
+        self.dst: Vertex = dst
+        self.weight: float = weight
 
     def __hash__(self) -> int:
         return hash((self.src, self.dst))
 
     def __eq__(self, o: object) -> bool:
-        return isinstance(o, Edge) and o.src == self.src and o.dst == self.dst and o.weight == self.weight
+        return isinstance(o, Edge) and o.src.__eq__(self.src) and o.dst.__eq__(self.dst) and o.weight == self.weight
 
     def __str__(self) -> str:
         return f"{self.src.val} to {self.dst.val}: {self.weight}"
@@ -49,7 +51,7 @@ class Edge:
 class Graph:
 
     def __init__(self) -> None:
-        self.adj_list = {}
+        self.adj_list: dict[Vertex, list[tuple[Vertex, float]]] = {}
 
     def add_vertex(self, vertex: Vertex) -> None:
         if vertex not in self.adj_list:
@@ -67,19 +69,21 @@ class Graph:
             self.add_edge(e)
 
 
+def get_airports() -> dict[str, Vertex]:
+    airports_data = pd.read_pickle("data-processing/airport-geo-location-data.pkl")
+    return {val: Vertex(val, lat, lon) for val, lat, lon in airports_data.values.tolist()}
+
+
+def get_flights(airports: dict[str, Vertex]) -> list[Edge]:
+    flights_data = pd.read_pickle("data-processing/airport-distance-data.pkl")
+    return [Edge(airports[src], airports[dst], weight) for src, dst, weight in flights_data.values.tolist()]
+
+
 def load_graph() -> Graph:
-    v1 = Vertex('MHK', 39.140998840332, -96.6707992553711)
-    v2 = Vertex('EUG', 44.1245994567871, -123.21199798584)
-    v3 = Vertex('RDM', 44.2541008, -121.1500015)
-    v4 = Vertex('MFR', 42.3741989135742, -122.873001098633)
-    v5 = Vertex('SEA', 47.4490013122559, -122.30899810791)
-    vertices = [v1, v2, v3, v4, v5]
-    e1 = Edge(v2, v3, 103)
-    e2 = Edge(v4, v3, 156)
-    e3 = Edge(v5, v3, 228)
-    edges = [e1, e2, e3]
+    vertices = get_airports()
+    edges = get_flights(vertices)
     graph = Graph()
-    graph.build_graph(vertices, edges)
+    graph.build_graph(list(vertices.values()), edges)
     return graph
 
 

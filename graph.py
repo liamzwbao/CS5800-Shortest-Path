@@ -70,13 +70,25 @@ class Graph:
 
 
 def get_airports() -> dict[str, Vertex]:
-    airports_data = pd.read_pickle("data-processing/airport-geo-location-data.pkl")
+    airports_data = pd.read_pickle(
+        "data-processing/airport-geo-location-data.pkl")
+    return {val: Vertex(val, lat, lon) for val, lat, lon in airports_data.values.tolist()}
+
+
+def get_first_n_airports(n: int) -> dict[str, Vertex]:
+    airports_data = pd.read_pickle(
+        "data-processing/airport-geo-location-data.pkl").head(n)
     return {val: Vertex(val, lat, lon) for val, lat, lon in airports_data.values.tolist()}
 
 
 def get_flights(airports: dict[str, Vertex]) -> list[Edge]:
     flights_data = pd.read_pickle("data-processing/airport-distance-data.pkl")
     return [Edge(airports[src], airports[dst], weight) for src, dst, weight in flights_data.values.tolist()]
+
+
+def get_flights_limited_airports(airports: dict[str, Vertex]) -> list[Edge]:
+    flights_data = pd.read_pickle("data-processing/airport-distance-data.pkl")
+    return [Edge(airports[src], airports[dst], weight) for src, dst, weight in flights_data.values.tolist() if src in airports and dst in airports]
 
 
 def load_graph() -> Graph:

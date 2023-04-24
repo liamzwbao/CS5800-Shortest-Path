@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from math import radians, sin, cos, sqrt, asin
-
+import os
 import pandas as pd
 
 
@@ -70,33 +70,41 @@ class Graph:
 
 
 def get_airports() -> dict[str, Vertex]:
-    airports_data = pd.read_pickle(
-        "data-processing/airport-geo-location-data.pkl")
+    dir_name = os.path.dirname(__file__)
+    file_name = os.path.join(dir_name, '../data-processing/airport-geo-location-data.pkl')
+    airports_data = pd.read_pickle(file_name)
     return {val: Vertex(val, lat, lon) for val, lat, lon in airports_data.values.tolist()}
 
 
 def get_first_n_airports(n: int) -> dict[str, Vertex]:
-    airports_data = pd.read_pickle(
-        "data-processing/airport-geo-location-data.pkl").head(n)
+    dir_name = os.path.dirname(__file__)
+    file_name = os.path.join(dir_name, '../data-processing/airport-geo-location-data.pkl')
+    airports_data = pd.read_pickle(file_name).head(n)
     return {val: Vertex(val, lat, lon) for val, lat, lon in airports_data.values.tolist()}
 
 
-def get_flights(airports: dict[str, Vertex]) -> list[Edge]:
-    flights_data = pd.read_pickle("data-processing/airport-distance-data.pkl")
-    return [Edge(airports[src], airports[dst], weight) for src, dst, weight in flights_data.values.tolist()]
+def get_flights(airports: dict[str, Vertex]) -> dict[str, Edge]:
+    dir_name = os.path.dirname(__file__)
+    file_name = os.path.join(dir_name, '../data-processing/airport-distance-data.pkl')
+    flights_data = pd.read_pickle(file_name)
+    return {f"{src}->{dst}": Edge(airports[src], airports[dst], airports[src].distance_to(airports[dst])) for
+            src, dst, _ in flights_data.values.tolist()}
 
 
 def get_flights_limited_airports(airports: dict[str, Vertex]) -> list[Edge]:
-    flights_data = pd.read_pickle("data-processing/airport-distance-data.pkl")
-    return [Edge(airports[src], airports[dst], weight) for src, dst, weight in flights_data.values.tolist() if src in airports and dst in airports]
+    dir_name = os.path.dirname(__file__)
+    file_name = os.path.join(dir_name, '../data-processing/airport-distance-data.pkl')
+    flights_data = pd.read_pickle(file_name)
+    return [Edge(airports[src], airports[dst], airports[src].distance_to(airports[dst])) for src, dst, _ in
+            flights_data.values.tolist() if src in airports and dst in airports]
 
 
-def load_graph() -> Graph:
+def load_graph() -> tuple[Graph, dict[str, Vertex], dict[str, Edge]]:
     vertices = get_airports()
     edges = get_flights(vertices)
     graph = Graph()
-    graph.build_graph(list(vertices.values()), edges)
-    return graph
+    graph.build_graph(list(vertices.values()), list(edges.values()))
+    return graph, vertices, edges
 
 
 def print_graph(graph: Graph):
@@ -105,4 +113,4 @@ def print_graph(graph: Graph):
 
 
 if __name__ == "__main__":
-    print_graph(load_graph())
+    print_graph(load_graph()[0])

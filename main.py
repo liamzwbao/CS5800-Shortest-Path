@@ -1,5 +1,5 @@
-from graph import load_graph, print_graph
+from common.graph import load_graph, print_graph
 
 if __name__ == '__main__':
     graph = load_graph()
-    print_graph(graph)
+    print_graph(graph[0])

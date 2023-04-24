@@ -1,6 +1,9 @@
-import heapq, time
-from typing import List, Tuple, Optional
-from graph import Vertex, Graph, get_airports, get_flights
+import heapq
+import time
+from typing import List, Tuple
+
+from common.graph import Vertex, Graph, load_graph, Edge
+from common.util import shortest_path, print_result
 
 
 def dijkstra_heap(src: str, dst: str, vertices: dict[str, Vertex], graph: Graph) -> Tuple[
@@ -27,8 +30,8 @@ def dijkstra_heap(src: str, dst: str, vertices: dict[str, Vertex], graph: Graph)
                 prev_vertices[neigh] = cur_vertex
                 heapq.heappush(priority_queue, (new_distance, neigh.val, neigh))
 
-    path = shortest_path(prev_vertices, start_vertex, end_vertex)
-    return distances[end_vertex], path
+    path = shortest_path(prev_vertices, end_vertex)
+    return distances.get(end_vertex, float('inf')), path
 
 
 def dijkstra_unsorted_list(src: str, dst: str, vertices: dict[str, Vertex],
@@ -54,31 +57,11 @@ def dijkstra_unsorted_list(src: str, dst: str, vertices: dict[str, Vertex],
                 distances[neigh] = new_distance
                 prev_vertices[neigh] = cur_vertex
 
-    path = shortest_path(prev_vertices, start_vertex, end_vertex)
-    return distances[end_vertex], path
+    path = shortest_path(prev_vertices, end_vertex)
+    return distances.get(end_vertex, float('inf')), path
 
 
-def shortest_path(prev_vertices: dict[Vertex, Optional[Vertex]], start: Vertex,
-                  end: Vertex) -> List[Vertex]:
-    path = []
-    cur_vertex = end
-
-    while cur_vertex is not None:
-        path.append(cur_vertex)
-        cur_vertex = prev_vertices[cur_vertex]
-
-    return path[::-1]
-
-
-def main():
-    vertices = get_airports()
-    edges = get_flights(vertices)
-    graph = Graph()
-    graph.build_graph(vertices.values(), edges)
-
-    src = "SFO"
-    dst = "JFK"
-
+def run(src: str, dst: str, graph: Graph, vertices: dict[str, Vertex]) -> None:
     if src not in vertices or dst not in vertices:
         print("Start or end vertex not found.")
         return
@@ -89,9 +72,7 @@ def main():
     elapsed_time = time.time() - start_time
 
     print("Using heap-based Dijkstra:")
-    print(f"Shortest path from {src} to {dst}: {' -> '.join([v.val for v in path])}")
-    print(f"Distance: {distance:.2f} miles")
-    print(f"Elapsed time: {elapsed_time:.4f} seconds\n")
+    print_result(path, distance, elapsed_time)
 
     # Using unsorted list-based Dijkstra
     start_time = time.time()
@@ -99,10 +80,10 @@ def main():
     elapsed_time = time.time() - start_time
 
     print("Using unsorted list-based Dijkstra:")
-    print(f"Shortest path from {src} to {dst}: {' -> '.join([v.val for v in path])}")
-    print(f"Distance: {distance:.2f} miles")
-    print(f"Elapsed time: {elapsed_time:.4f} seconds")
+    print_result(path, distance, elapsed_time)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    src_airport = "SFO"
+    dst_airport = "JFK"
+    run(src_airport, dst_airport, *load_graph()[:2])

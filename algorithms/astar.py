@@ -19,7 +19,7 @@ def astar_heap(src: str, dst: str, vertices: dict[str, Vertex], graph: Graph) ->
     f_scores: dict[Vertex, float] = {src_vertex: initial_h}
     heap: list[tuple[float, str, Vertex]] = [(f_scores[src_vertex], src_vertex.val, src_vertex)]
     open_set: set[Vertex] = {src_vertex}
-    close_set: set[Vertex] = set()
+    closed_set: set[Vertex] = set()
     prev_vertices: dict[Vertex, Vertex] = {}
 
     while heap:
@@ -27,13 +27,13 @@ def astar_heap(src: str, dst: str, vertices: dict[str, Vertex], graph: Graph) ->
 
         if cur_vertex == dst_vertex:
             break
-        close_set.add(cur_vertex)
+        closed_set.add(cur_vertex)
 
         for neigh, weight in graph.adj_list[cur_vertex]:
-            cur_g_score = g_scores[cur_vertex] + weight
-            if neigh in close_set and cur_g_score >= g_scores[neigh]:
+            if neigh in closed_set:
                 continue
 
+            cur_g_score = g_scores[cur_vertex] + weight
             if neigh not in open_set or cur_g_score < g_scores[neigh]:
                 g_scores[neigh] = cur_g_score
                 f_scores[neigh] = cur_g_score + get_heuristic(neigh, dst_vertex)
@@ -54,7 +54,7 @@ def astar_unsorted_list(src: str, dst: str, vertices: dict[str, Vertex], graph: 
     f_scores: dict[Vertex, float] = {src_vertex: initial_h}
     unvisited: list[Vertex] = [src_vertex]
     open_set: set[Vertex] = {src_vertex}
-    close_set: set[Vertex] = set()
+    closed_set: set[Vertex] = set()
     prev_vertices: dict[Vertex, Vertex] = {}
 
     while unvisited:
@@ -63,13 +63,13 @@ def astar_unsorted_list(src: str, dst: str, vertices: dict[str, Vertex], graph: 
 
         if cur_vertex == dst_vertex:
             break
-        close_set.add(cur_vertex)
+        closed_set.add(cur_vertex)
 
         for neigh, weight in graph.adj_list[cur_vertex]:
-            cur_g_score = g_scores[cur_vertex] + weight
-            if neigh in close_set and cur_g_score >= g_scores[neigh]:
+            if neigh in closed_set:
                 continue
 
+            cur_g_score = g_scores[cur_vertex] + weight
             if neigh not in open_set or cur_g_score < g_scores[neigh]:
                 g_scores[neigh] = cur_g_score
                 f_scores[neigh] = cur_g_score + get_heuristic(neigh, dst_vertex)

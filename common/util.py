@@ -14,9 +14,13 @@ def shortest_path(prev_vertices: dict[Vertex, Optional[Vertex]], dst: Vertex) ->
     return path[::-1]
 
 
+def get_path(path: List[Vertex]) -> str:
+    return ' -> '.join([v.val for v in path])
+
+
 def print_path(path: List[Vertex]) -> None:
     src, dst = path[0], path[-1]
-    print(f"Shortest path from {src.val} to {dst.val}: {' -> '.join([v.val for v in path])}")
+    print(f"Shortest path from {src.val} to {dst.val}: {get_path(path)}")
 
 
 def print_distance(distance: float) -> None:

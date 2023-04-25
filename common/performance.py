@@ -1,10 +1,12 @@
-import time
 import random
+import time
+
 import matplotlib.pyplot as plt
-from algorithms.dijkstra import dijkstra_heap, dijkstra_unsorted_list
+
 from algorithms.astar import astar_heap, astar_unsorted_list
+from algorithms.dijkstra import dijkstra_heap, dijkstra_unsorted_list
 from algorithms.floyd_warshall import floyd_warshall
-from common.graph import get_airports, get_flights, Graph, get_first_n_airports, \
+from common.graph import Graph, get_first_n_airports, \
     get_flights_limited_airports, Edge
 
 
@@ -70,8 +72,8 @@ def draw_line_graph_same_datapoint():
     plt.show()
 
 
-def draw_line_graph():
-    datapoints = list(range(100, 1001, 100))
+def draw_line_graph(num_iterations: int) -> None:
+    datapoints = list(range(50, 451, 50))
     dijkstra_heap_avg_times = []
     dijkstra_unsorted_avg_times = []
     astar_heap_avg_times = []
@@ -88,7 +90,6 @@ def draw_line_graph():
         graph = Graph()
         graph.build_graph(vertices.values(), edges)
 
-        num_iterations = 1000
         dijkstra_heap_times = []
         dijkstra_unsorted_times = []
         astar_heap_times = []
@@ -146,4 +147,6 @@ def draw_line_graph():
 
 if __name__ == "__main__":
     draw_line_graph_same_datapoint()
-    draw_line_graph()
+    draw_line_graph(100)
+    draw_line_graph(500)
+    draw_line_graph(1000)

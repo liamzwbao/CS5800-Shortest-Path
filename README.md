@@ -28,3 +28,8 @@ Zhiwei Bao, Yuheng Miao, Annabelle Sun
     - Delete the local cloned project.
     - Install Git LFS as described in step 1.
     - Re-clone the project.
+
+## Linked Resources
+
+1. [Report](https://docs.google.com/document/d/1K0UoZghYY9QWl8vXgW5-C-QY2kXM8zn4P9DxKYbEjsY/edit?usp=sharing)
+2. [Powerpoint](https://docs.google.com/presentation/d/1E4bCy00dCJ0o2hTYw62VaNijNv99XM2XeoDUOCVCzvo/edit?usp=sharing)
